@@ -139,3 +139,6 @@ gen/__pycache__
 
 # segfault log
 crash.log
+
+# Exported JSON (must be moved into app root)
+result.json

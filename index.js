@@ -1,4 +1,4 @@
-import result from "./export/result.json" with { "type": "json" };
+import result from "./result.json" with { "type": "json" };
 // import nodecallspython from "node-calls-python";
 import TelegramBot from "node-telegram-bot-api";
 import { GoogleGenerativeAI } from "@google/generative-ai";
