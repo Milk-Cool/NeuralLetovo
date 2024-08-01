@@ -38,6 +38,7 @@ const gensend = async () => {
     console.log("node: load data");
 
     let generated = await model.generateContent(messages);
+    generated = generated.response.text();
     const open = generated.indexOf("[");
     const close = generated.lastIndexOf("]");
     generated = generated.slice(open == -1 ? 0 : open + 1, close == -1 ? generated.length : close);
