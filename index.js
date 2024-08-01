@@ -1,36 +1,45 @@
 import result from "./export/result.json" with { "type": "json" };
-import nodecallspython from "node-calls-python";
+// import nodecallspython from "node-calls-python";
 import TelegramBot from "node-telegram-bot-api";
-import SegfaultHandler from "segfault-handler";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+// import SegfaultHandler from "segfault-handler";
 console.log("node: import modules");
 
-SegfaultHandler.registerHandler("crash.log");
+// SegfaultHandler.registerHandler("crash.log");
 
-const { TOKEN, CHANNEL } = process.env;
+const { TOKEN, CHANNEL, KEY } = process.env;
 const bot = new TelegramBot(TOKEN, { "polling": false });
 console.log("node: create bot");
 
-const py = nodecallspython;
+const genAI = new GoogleGenerativeAI(KEY);
+const model = genAI.getGenerativeModel({ "model": "gemini-1.5-pro-latest", "generationConfig": {
+    "temperature": 2.0
+} });
+console.log("node: create model");
 
-const pymodule = py.importSync("gen/main.py");
-console.log("node: import python");
+// const py = nodecallspython;
+
+// const pymodule = py.importSync("gen/main.py");
+// console.log("node: import python");
 const gensend = async () => {
     let { messages } = result;
     messages = messages.map(x => typeof x.text === "string" ? x.text : x.text.reduce((a, b) => a + (typeof b === "string" ? b : b.text), ""));
     const start = Math.floor(Math.random() * (messages.length - 200));
     messages = messages.slice(start, start + 200);
     messages = messages.map(x => `[${(() => {
-        x = x.slice(0, 200);
+        x = x.slice(0, 500);
         x = x.slice(0, x.lastIndexOf(/ |\./g));
         return x;
     })()}]`);
-    const msgInit = messages.map(x => x.trim());
     messages = messages.join("");
-    messages = messages.slice(0, 2000) + "][";
+    messages = messages.slice(0, 7000) + "]\nСгенерируй новый пост в квадратных скобках. Не пиши ничего лишнего.";
     console.log(messages)
     console.log("node: load data");
 
-    let generated = (await py.call(pymodule, "gen", messages)).replace("]", "").replace(/[^^\.]+\. /, "");
+    let generated = await model.generateContent(messages);
+    const open = generated.indexOf("[");
+    const close = generated.lastIndexOf("]");
+    generated = generated.slice(open == -1 ? 0 : open + 1, close == -1 ? generated.length : close);
 
     bot.sendMessage(parseInt(CHANNEL), generated);
     console.log("node: parsed & sent response");
