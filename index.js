@@ -4,6 +4,7 @@ import TelegramBot from "node-telegram-bot-api";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 // import SegfaultHandler from "segfault-handler";
 console.log("node: import modules");
+import http from "http";
 
 // SegfaultHandler.registerHandler("crash.log");
 
@@ -46,3 +47,5 @@ const gensend = async () => {
 };
 gensend();
 setInterval(gensend, 2 * 60 * 60 * 1000);
+
+http.createServer((_req, res) => res.end("ok")).listen(7852);
