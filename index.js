@@ -33,7 +33,7 @@ const gensend = async () => {
         return x;
     })()}]`);
     messages = messages.join("");
-    messages = messages.slice(0, 7000) + "]\nСгенерируй новый пост в квадратных скобках. Не пиши ничего лишнего.";
+    messages = messages.slice(0, 7000) + `]\nСегодняшняя дата: ${(new Date()).toDateString()}\nСгенерируй новый пост в квадратных скобках. Не пиши ничего лишнего.`;
     console.log(messages)
     console.log("node: load data");
 
