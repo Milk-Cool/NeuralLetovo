@@ -33,7 +33,9 @@ const gensend = async () => {
         return x;
     })()}]`);
     messages = messages.join("");
-    messages = messages.slice(0, 7000) + `]\nСегодняшняя дата: ${(new Date()).toDateString()}\nСгенерируй новый пост в квадратных скобках. Не пиши ничего лишнего.`;
+    messages = messages.slice(0, 7000) + `]\nСегодняшняя дата: ${(new Date()).toDateString()}
+Сгенерируй новый пост (или посты) в квадратных скобках.
+Не пиши ничего лишнего. Каждый пост должен быть в своих скобках.`;
     console.log(messages)
     console.log("node: load data");
 
@@ -42,9 +44,13 @@ const gensend = async () => {
     const open = generated.indexOf("[");
     const close = generated.lastIndexOf("]");
     generated = generated.slice(open == -1 ? 0 : open + 1, close == -1 ? generated.length : close);
+    
+    const out = generated.split(/\]\s*\[/g);
 
-    bot.sendMessage(parseInt(CHANNEL), generated);
-    console.log("node: parsed & sent response");
+    for(const msg of out) {
+        bot.sendMessage(parseInt(CHANNEL), msg.replaceAll("[", "").replaceAll("]", ""));
+        console.log("node: parsed & sent response");
+    }
 };
 gensend();
 setInterval(gensend, 2 * 60 * 60 * 1000);
