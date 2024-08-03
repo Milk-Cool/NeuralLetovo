@@ -25,6 +25,7 @@ console.log("node: create model");
 const gensend = async () => {
     let { messages } = result;
     messages = messages.map(x => typeof x.text === "string" ? x.text : x.text.reduce((a, b) => a + (typeof b === "string" ? b : b.text), ""));
+    messages = messages.filter(Boolean);
     const start = Math.floor(Math.random() * (messages.length - 200));
     messages = messages.slice(start, start + 200);
     messages = messages.map(x => `[${(() => {
